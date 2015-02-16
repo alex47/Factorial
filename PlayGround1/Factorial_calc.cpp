@@ -2,18 +2,6 @@
 
 
 //PUBLIC
-Factorial_calc::Factorial_calc()
-{
-	
-}
-
-
-Factorial_calc::~Factorial_calc()
-{
-
-}
-
-
 string Factorial_calc::operator()(int num)
 {
 	if (num == 1)

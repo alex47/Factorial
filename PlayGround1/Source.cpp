@@ -1,6 +1,6 @@
-
-
 #include "Factorial_calc.h"
+
+#include <iostream>
 
 using namespace std;
 

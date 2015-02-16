@@ -3,19 +3,12 @@
 #include <vector>
 #include <string>
 #include <future>
-#include <cctype>
-#include <iostream>
-
-#include <conio.h>
 
 using namespace std;
 
 class Factorial_calc
 {
 public:
-	Factorial_calc();
-	~Factorial_calc();
-
 	//Overloads the () operator
 	string operator()(int num);
 	
