@@ -1,9 +1,10 @@
 #include "Factorial_calc.h"
 
+
 //PUBLIC
 Factorial_calc::Factorial_calc()
 {
-
+	
 }
 
 
@@ -20,8 +21,10 @@ string Factorial_calc::operator()(int num)
 		return "1";
 	}
 
-	return multiply(to_string(num), Factorial_calc::operator()(num - 1));
+	//return multiply(to_string(num), Factorial_calc::operator()(num - 1));
+	return multiply(Factorial_calc::operator()(num - 1), to_string(num));
 }
+
 
 //PRIVATE
 int Factorial_calc::charToInt(char c)
@@ -52,16 +55,28 @@ vector<string> Factorial_calc::fillWithNulls(vector<string> numbers)
 {
 	int numLength = lengthOfMultipledNumber(numbers);
 
-	//TODO: make this threaded
+	nullFilling.clear();
 
 	for (int i = 0; i < numbers.size(); i++)
 	{
-		numbers[i].append(numbers.size() - i - 1, '0');
+		nullFilling.push_back(
+			async([](string number, int num, int size, int length)
+			{
+				number.append(size - num - 1, '0');
 
-		while (numbers[i].length() < numLength)
-		{
-			numbers[i].insert(0, 1, '0');
-		}
+				while (number.length() < length)
+				{
+					number.insert(0, 1, '0');
+				}
+
+				return number;
+			}, 
+			numbers[i], i, numbers.size(), numLength));
+	}
+
+	for (int i = 0; i < nullFilling.size(); i++)
+	{
+		numbers[i] = nullFilling[i].get();
 	}
 
 	return numbers;

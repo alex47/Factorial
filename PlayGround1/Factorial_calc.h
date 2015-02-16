@@ -3,7 +3,11 @@
 #include <vector>
 #include <string>
 #include <thread>
+#include <future>
 #include <cctype>
+#include <iostream>
+
+#include <conio.h>
 
 using namespace std;
 
@@ -15,8 +19,11 @@ public:
 
 	//Overloads the () operator
 	string operator()(int num);
-
+	
 private:
+	vector<future<string>> nullFilling;
+
+
 	//Converts a char to int
 	int charToInt(char c);
 
