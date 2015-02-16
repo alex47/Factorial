@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include <thread>
 #include <future>
 #include <cctype>
 #include <iostream>
@@ -21,11 +20,8 @@ public:
 	string operator()(int num);
 	
 private:
-	vector<future<string>> nullFilling;
-
-
 	//Converts a char to int
-	int charToInt(char c);
+	static int charToInt(char c);
 
 	//Calculates the length of the final number
 	int lengthOfMultipledNumber(vector<string> numbers);

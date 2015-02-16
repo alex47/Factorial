@@ -54,13 +54,14 @@ int Factorial_calc::lengthOfMultipledNumber(vector<string> numbers)
 vector<string> Factorial_calc::fillWithNulls(vector<string> numbers)
 {
 	int numLength = lengthOfMultipledNumber(numbers);
+	int size = numbers.size();
 
-	nullFilling.clear();
+	vector<future<string>> nullFilling;
 
 	for (int i = 0; i < numbers.size(); i++)
 	{
 		nullFilling.push_back(
-			async([](string number, int num, int size, int length)
+			async(std::launch::async, [](string number, int num, int size, int length)
 			{
 				number.append(size - num - 1, '0');
 
@@ -71,7 +72,7 @@ vector<string> Factorial_calc::fillWithNulls(vector<string> numbers)
 
 				return number;
 			}, 
-			numbers[i], i, numbers.size(), numLength));
+				numbers[i], i, size, numLength));
 	}
 
 	for (int i = 0; i < nullFilling.size(); i++)
@@ -86,33 +87,41 @@ vector<string> Factorial_calc::fillWithNulls(vector<string> numbers)
 vector<string> Factorial_calc::calculateNums(const string num1, const string num2)
 {
 	vector<string> numsToAdd;
-	vector<string> tempNums;
-	string tempNum;
-	string numToStore;
-	int rest;
+	vector<future<string>> calculatedNums;
 
-	for (int num2Index = 0; num2Index < num2.size(); num2Index++)
+	auto func = [](string num1, int num2)
 	{
-		tempNums.clear();
-		tempNum.clear();
-		rest = 0;
+		string finalNum;
+		string temporaryNum;
+		vector<string> tempNums;
+		int rest = 0;
 
 		for (int num1Index = num1.length() - 1; num1Index >= 0; num1Index--)
 		{
-			tempNums.push_back(to_string(charToInt(num2[num2Index]) * charToInt(num1[num1Index])));
+			tempNums.push_back(to_string(num2 * charToInt(num1[num1Index])));
 		}
 
 		for (int i = 0; i < tempNums.size() - 1; i++)
 		{
-			numToStore = to_string(rest + atoi(tempNums[i].c_str()));
-			rest = (numToStore.length() > 1) ? charToInt(numToStore[0]) : 0;
-			tempNum.insert(0, 1, numToStore[numToStore.length() - 1]);
+			temporaryNum = to_string(rest + atoi(tempNums[i].c_str()));
+			rest = (temporaryNum.length() > 1) ? charToInt(temporaryNum[0]) : 0;
+			finalNum.insert(0, 1, temporaryNum[temporaryNum.length() - 1]);
 		}
 
-		numToStore = to_string(rest + stoi(tempNums[tempNums.size() - 1], nullptr, 10));
-		tempNum.insert(0, numToStore);
+		temporaryNum = to_string(rest + stoi(tempNums[tempNums.size() - 1], nullptr, 10));
+		finalNum.insert(0, temporaryNum);
 
-		numsToAdd.push_back(tempNum);
+		return finalNum;
+	};
+
+	for (int num2Index = 0; num2Index < num2.size(); num2Index++)
+	{
+		calculatedNums.push_back(async(std::launch::async, func, num1, charToInt(num2[num2Index])));
+	}
+
+	for (int i = 0; i < calculatedNums.size(); i++)
+	{
+		numsToAdd.push_back(calculatedNums[i].get());
 	}
 
 	return numsToAdd;
